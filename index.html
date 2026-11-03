@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SCM | Import & Material Control</title>
+<style>
+:root{--navy:#14243a;--blue:#2563eb;--ink:#182230;--muted:#64748b;--line:#e5eaf1;--bg:#f4f7fb;--green:#138a5b;--orange:#d97706;--red:#dc4545}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font:14px/1.45 Inter,Segoe UI,Arial,sans-serif;color:var(--ink)}
+header{background:linear-gradient(110deg,#14243a,#203f63);color:white;padding:20px 26px;display:flex;align-items:center;justify-content:space-between;gap:15px}
+.brand{display:flex;align-items:center;gap:13px}.logo{width:42px;height:42px;border-radius:12px;background:#ffffff1c;display:grid;place-items:center;font-size:22px}
+h1{font-size:20px;margin:0;font-weight:750}header small{color:#c5d3e3}.headright{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.status{font-size:12px;padding:6px 10px;border:1px solid #ffffff40;border-radius:20px;color:#dce9f7}
+.layout{display:flex;min-height:calc(100vh - 82px)}nav{width:220px;background:white;border-right:1px solid var(--line);padding:18px 12px;flex-shrink:0}
+nav button{width:100%;border:0;background:transparent;text-align:left;padding:11px 13px;border-radius:9px;color:#526174;margin:2px 0;cursor:pointer;font-weight:600}
+nav button.active,nav button:hover{background:#eaf1ff;color:#1f57c8}
+main{padding:25px;width:100%;max-width:1600px;margin:auto}.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+h2{font-size:22px;margin:0 0 4px}.sub{color:var(--muted);font-size:13px}
+button,.btn{cursor:pointer;border:0;border-radius:8px;padding:9px 13px;font-weight:650;font-size:13px}
+.primary{background:var(--blue);color:white}.secondary{background:white;border:1px solid var(--line);color:#344256}.danger{background:#fff0f0;color:#b42323}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}
+.card{background:white;border:1px solid var(--line);border-radius:13px;padding:17px;box-shadow:0 2px 8px #14243a08}
+.klabel{font-size:12px;color:var(--muted);font-weight:600}.kvalue{font-size:27px;font-weight:800;margin:7px 0 2px}.kfoot{font-size:11px;color:var(--muted)}
+.panel{background:white;border:1px solid var(--line);border-radius:13px;padding:18px;margin-bottom:16px}
+.panelhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}.panel h3{font-size:15px;margin:0}
+table{border-collapse:collapse;width:100%;min-width:700px}th,td{text-align:left;padding:11px 10px;border-bottom:1px solid #edf0f4;font-size:12px;vertical-align:middle}th{color:#66758a;background:#f8fafc;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.tablewrap{overflow:auto}.pill{display:inline-block;padding:4px 8px;border-radius:20px;background:#eef2f7;color:#526174;font-size:11px;font-weight:700}.pill.green{background:#e5f6ee;color:#087747}.pill.orange{background:#fff2dc;color:#a65b00}.pill.red{background:#ffe9e9;color:#b52c2c}.pill.blue{background:#e8efff;color:#2454b4}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:15px}.empty{text-align:center;color:#8390a1;padding:28px}
+.modal{position:fixed;inset:0;background:#0d1b2b80;display:none;align-items:center;justify-content:center;padding:15px;z-index:5}.modal.show{display:flex}.dialog{background:white;border-radius:15px;width:min(720px,100%);max-height:92vh;overflow:auto;padding:22px}
+.dialog h3{margin:0 0 16px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field label{display:block;font-size:12px;color:#536174;font-weight:650;margin-bottom:5px}.field input,.field select,.field textarea{width:100%;padding:10px;border:1px solid #dce3ec;border-radius:8px;font:inherit;background:white}.field.full{grid-column:1/-1}.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.note{padding:12px 14px;background:#eff6ff;border:1px solid #d9e7ff;color:#234b88;border-radius:9px;font-size:12px}
+.search{padding:9px 11px;border:1px solid var(--line);border-radius:8px;min-width:210px}
+.hide{display:none!important}.muted{color:var(--muted)}.link{color:#245bc2;text-decoration:none;font-weight:650}.link:hover{text-decoration:underline}
+@media(max-width:900px){.cards{grid-template-columns:repeat(2,1fr)}nav{width:185px}main{padding:17px}}
+@media(max-width:650px){.layout{display:block}nav{width:100%;display:flex;overflow:auto;padding:8px}nav button{white-space:nowrap;width:auto}main{padding:13px}.cards{grid-template-columns:repeat(2,1fr)}.grid2,.formgrid{grid-template-columns:1fr}.field.full{grid-column:auto}header{padding:15px}}
+</style></head>
+<body>
+<header><div class="brand"><div class="logo">🚢</div><div><h1>SCM · Import & Material Control</h1><small>Supply chain visibility from purchase order to warehouse</small></div></div><div class="headright"><span class="status" id="dbStatus">Connecting database…</span><span class="status" id="clock"></span></div></header>
+<div class="layout"><nav id="nav">
+<button class="active" data-page="dashboard">▦ &nbsp; Dashboard</button>
+<button data-page="materials">▤ &nbsp; Material Master</button>
+<button data-page="orders">🧾 &nbsp; Purchase Orders</button>
+<button data-page="shipments">🚢 &nbsp; Import Shipments</button>
+<button data-page="receipts">📥 &nbsp; Material Receipts</button>
+<button data-page="inventory">▥ &nbsp; Inventory</button>
+</nav><main>
+<section id="dashboard" class="page">
+<div class="topline"><div><h2>Supply Chain Dashboard</h2><div class="sub">Overview of imported raw materials and inbound shipments</div></div><button class="primary" onclick="openModal('shipment')">＋ Add shipment</button></div>
+<div class="cards" id="dashCards"></div>
+<div class="grid2"><div class="panel"><div class="panelhead"><h3>Shipment status</h3><button class="secondary" onclick="go('shipments')">View all</button></div><div id="dashShip"></div></div>
+<div class="panel"><div class="panelhead"><h3>Low stock materials</h3><button class="secondary" onclick="go('inventory')">Inventory</button></div><div id="dashLow"></div></div></div>
+<div class="panel"><div class="panelhead"><h3>Recent material receipts</h3><button class="secondary" onclick="go('receipts')">View receipts</button></div><div id="dashReceipts"></div></div>
+</section>
+<section id="materials" class="page hide"><div class="topline"><div><h2>Material Master</h2><div class="sub">Maintain raw material codes, units and reorder levels</div></div><button class="primary" onclick="openModal('material')">＋ Add material</button></div><div class="panel"><div class="panelhead"><h3>Material list</h3><input class="search" placeholder="Search material…" oninput="renderTable('materials',this.value)"></div><div id="materialsTable"></div></div></section>
+<section id="orders" class="page hide"><div class="topline"><div><h2>Purchase Orders</h2><div class="sub">Track supplier commitments, values and delivery dates</div></div><button class="primary" onclick="openModal('order')">＋ Create PO</button></div><div class="panel"><div class="panelhead"><h3>Purchase order register</h3><input class="search" placeholder="Search PO / supplier…" oninput="renderTable('orders',this.value)"></div><div id="ordersTable"></div></div></section>
+<section id="shipments" class="page hide"><div class="topline"><div><h2>Import Shipments & Vessel Tracking</h2><div class="sub">Record vessel, voyage, ports, ETA and online AIS lookup</div></div><button class="primary" onclick="openModal('shipment')">＋ Add shipment</button></div><div class="note" style="margin-bottom:14px">Live AIS positions require an API key from a vessel-tracking provider. Until configured, use the vessel search links on each shipment to view provider websites. ETA and status entered here remain available in the shared SCM database.</div><div class="panel"><div class="panelhead"><h3>Inbound shipment register</h3><input class="search" placeholder="Search vessel / voyage / PO…" oninput="renderTable('shipments',this.value)"></div><div id="shipmentsTable"></div></div></section>
+<section id="receipts" class="page hide"><div class="topline"><div><h2>Incoming Material / GRN</h2><div class="sub">Record physical receipts and update inventory balances</div></div><button class="primary" onclick="openModal('receipt')">＋ Record receipt</button></div><div class="panel"><div class="panelhead"><h3>Goods receipt register</h3><input class="search" placeholder="Search GRN / material…" oninput="renderTable('receipts',this.value)"></div><div id="receiptsTable"></div></div></section>
+<section id="inventory" class="page hide"><div class="topline"><div><h2>Raw Material Inventory</h2><div class="sub">Received quantity less recorded consumption</div></div><button class="secondary" onclick="exportCSV('inventory')">↓ Export CSV</button></div><div class="panel"><div class="panelhead"><h3>Stock position</h3></div><div id="inventoryTable"></div></div></section>
+</main></div>
+<div class="modal" id="modal"><div class="dialog"><h3 id="modalTitle">Add record</h3><form id="recordForm"><div class="formgrid" id="formFields"></div><div class="actions"><button type="button" class="secondary" onclick="closeModal()">Cancel</button><button class="primary" type="submit">Save record</button></div></form></div></div>
+<script>
+const emptyState={materials:[],orders:[],shipments:[],receipts:[]};
+let state=JSON.parse(JSON.stringify(emptyState)), currentType='';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num=v=>Number(v||0);
+const fmt=v=>num(v).toLocaleString('en-IN',{maximumFractionDigits:2});
+async function load(){try{let r=await fetch('/api/state');if(!r.ok)throw 0;state={...emptyState,...await r.json()};$('dbStatus').textContent='● Shared LAN database';$('dbStatus').style.color='#b7f5d3';}catch(e){$('dbStatus').textContent='● Server not connected';$('dbStatus').style.color='#ffd0d0';state=JSON.parse(JSON.stringify(emptyState));}renderAll();}
+async function save(){try{let r=await fetch('/api/state',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(state)});if(!r.ok)throw 0;$('dbStatus').textContent='● Saved to shared database';$('dbStatus').style.color='#b7f5d3';}catch(e){alert('Could not save to server. Check that server.py is running and refresh.');}}
+function go(page){document.querySelectorAll('.page').forEach(x=>x.classList.add('hide'));$(page).classList.remove('hide');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.page));
+function badge(s){let c=/arrived|received|closed|complete/i.test(s)?'green':/delay|short|reject/i.test(s)?'red':/transit|sailing|ordered|pending/i.test(s)?'orange':'blue';return `<span class="pill ${c}">${esc(s||'Open')}</span>`}
+function table(headers,rows){if(!rows.length)return '<div class="empty">No records yet. Use the add button to create your first record.</div>';return `<div class="tablewrap"><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`}
+function renderAll(){renderDashboard();['materials','orders','shipments','receipts'].forEach(t=>renderTable(t));renderInventory();}
+function renderDashboard(){
+let transit=state.shipments.filter(x=>/transit|sailing|departed/i.test(x.status)).length;
+let delayed=state.shipments.filter(x=>/delay/i.test(x.status)).length;
+let pending=state.orders.reduce((a,x)=>a+Math.max(0,num(x.quantity)-receivedForPO(x.po)),0);
+let stock=state.materials.reduce((a,m)=>a+stockFor(m.code),0);
+$('dashCards').innerHTML=[['Active POs',state.orders.length,'Purchase orders recorded'],['Vessels in transit',transit,'Based on shipment status'],['Pending PO quantity',fmt(pending),'Units not yet received'],['Total stock quantity',fmt(stock),'Across raw materials']].map((x,i)=>`<div class="card"><div class="klabel">${x[0]}</div><div class="kvalue">${x[1]}</div><div class="kfoot">${x[2]}</div></div>`).join('');
+$('dashShip').innerHTML=table(['Vessel','Destination','ETA','Status'],state.shipments.slice(-5).reverse().map(s=>`<tr><td><b>${esc(s.vessel)}</b><div class="muted">${esc(s.imo||'IMO not entered')}</div></td><td>${esc(s.discharge||'—')}</td><td>${esc(s.eta||'—')}</td><td>${badge(s.status)}</td></tr>`));
+let lows=state.materials.filter(m=>stockFor(m.code)<=num(m.reorder));
+$('dashLow').innerHTML=table(['Material','Stock','Reorder level'],lows.map(m=>`<tr><td>${esc(m.name)}</td><td>${fmt(stockFor(m.code))} ${esc(m.unit)}</td><td>${fmt(m.reorder)}</td></tr>`));
+$('dashReceipts').innerHTML=table(['GRN','Date','Material','Received qty'],state.receipts.slice(-5).reverse().map(r=>`<tr><td>${esc(r.grn)}</td><td>${esc(r.date)}</td><td>${esc(matName(r.code))}</td><td>${fmt(r.qty)}</td></tr>`));
+}
+function matName(code){return state.materials.find(m=>m.code===code)?.name||code||'—'}
+function receivedForPO(po){return state.receipts.filter(r=>r.po===po).reduce((a,r)=>a+num(r.qty),0)}
+function stockFor(code){return state.receipts.filter(r=>r.code===code).reduce((a,r)=>a+num(r.qty)-num(r.rejected),0)}
+function renderTable(type,filter=''){let rows=state[type]||[],q=filter.toLowerCase();rows=rows.filter(x=>JSON.stringify(x).toLowerCase().includes(q));
+let h=[],rr=[];
+if(type==='materials'){h=['Code','Material description','Grade / specification','Unit','Reorder level','Actions'];rr=rows.map((x)=>`<tr><td><b>${esc(x.code)}</b></td><td>${esc(x.name)}</td><td>${esc(x.grade||'—')}</td><td>${esc(x.unit)}</td><td>${fmt(x.reorder)}</td><td><button class="danger" onclick="del('materials','${esc(x.code)}','code')">Delete</button></td></tr>`)}
+if(type==='orders'){h=['PO number','Supplier','Material','Quantity','Currency / value','PO date','Expected date','Status'];rr=rows.map(x=>`<tr><td><b>${esc(x.po)}</b></td><td>${esc(x.supplier)}</td><td>${esc(matName(x.code))}</td><td>${fmt(x.quantity)}</td><td>${esc(x.currency)} ${fmt(x.amount)}</td><td>${esc(x.date)}</td><td>${esc(x.expected)}</td><td>${badge(x.status)}</td></tr>`)}
+if(type==='shipments'){h=['Vessel / IMO','Voyage','Port of loading','Port of discharge','ETA','Status','Online tracking'];rr=rows.map(x=>{let term=encodeURIComponent(x.imo||x.vessel||'');return `<tr><td><b>${esc(x.vessel)}</b><div class="muted">${esc(x.imo||'IMO pending')}</div></td><td>${esc(x.voyage||'—')}</td><td>${esc(x.loading||'—')}</td><td>${esc(x.discharge||'—')}</td><td>${esc(x.eta||'—')}</td><td>${badge(x.status)}</td><td><a class="link" target="_blank" rel="noopener" href="https://www.vesselfinder.com/vessels?name=${term}">VesselFinder</a> · <a class="link" target="_blank" rel="noopener" href="https://www.marinetraffic.com/en/ais/index/search/all?keyword=${term}">MarineTraffic</a></td></tr>`})}
+if(type==='receipts'){h=['GRN','Receipt date','PO number','Material','Received qty','Rejected qty','Net received','Remarks'];rr=rows.map(x=>`<tr><td><b>${esc(x.grn)}</b></td><td>${esc(x.date)}</td><td>${esc(x.po||'—')}</td><td>${esc(matName(x.code))}</td><td>${fmt(x.qty)}</td><td>${fmt(x.rejected)}</td><td><b>${fmt(num(x.qty)-num(x.rejected))}</b></td><td>${esc(x.remarks||'—')}</td></tr>`)}
+$(type+'Table').innerHTML=table(h,rr);
+}
+function renderInventory(){let rows=state.materials.map(m=>`<tr><td><b>${esc(m.code)}</b></td><td>${esc(m.name)}</td><td>${esc(m.unit)}</td><td>${fmt(state.receipts.filter(r=>r.code===m.code).reduce((a,r)=>a+num(r.qty),0))}</td><td>${fmt(state.receipts.filter(r=>r.code===m.code).reduce((a,r)=>a+num(r.rejected),0))}</td><td><b>${fmt(stockFor(m.code))}</b></td><td>${fmt(m.reorder)}</td><td>${stockFor(m.code)<=num(m.reorder)?'<span class="pill red">Low stock</span>':'<span class="pill green">Available</span>'}</td></tr>`);$('inventoryTable').innerHTML=table(['Code','Material','Unit','Gross received','Rejected','Net stock','Reorder level','Status'],rows)}
+const schemas={
+material:{title:'Add raw material',fields:[['code','Material code','text',1],['name','Material description','text',1],['grade','Grade / specification','text'],['unit','Unit (kg, MT, pcs)','text',1],['reorder','Reorder level','number']]},
+order:{title:'Create purchase order',fields:[['po','PO number','text',1],['supplier','Supplier name','text',1],['code','Material','material',1],['quantity','Ordered quantity','number',1],['currency','Currency','currency',1],['amount','PO value','number'],['date','PO date','date'],['expected','Expected delivery date','date'],['status','Status','status']]},
+shipment:{title:'Add import shipment',fields:[['vessel','Vessel name','text',1],['imo','IMO number','text'],['voyage','Voyage number','text'],['loading','Port of loading','text'],['discharge','Port of discharge','text'],['eta','Estimated arrival date','date'],['status','Shipment status','shipmentstatus'],['po','Related PO number','po']]},
+receipt:{title:'Record incoming material / GRN',fields:[['grn','GRN number','text',1],['date','Receipt date','date',1],['po','Purchase order','po'],['code','Material','material',1],['qty','Received quantity','number',1],['rejected','Rejected quantity','number'],['remarks','Remarks','text']]}
+};
+function options(type){if(type==='material')return state.materials.map(m=>[m.code,m.code+' – '+m.name]);if(type==='po')return state.orders.map(o=>[o.po,o.po+' – '+o.supplier]);if(type==='currency')return [['INR','INR – Indian Rupee'],['USD','USD – US Dollar'],['EUR','EUR – Euro'],['CNY','CNY – Chinese Yuan'],['JPY','JPY – Japanese Yen'],['GBP','GBP – Pound Sterling'],['OTHER','Other']];if(type==='status')return ['Open','Ordered','Partially Received','Received','Closed'].map(x=>[x,x]);if(type==='shipmentstatus')return ['Booked','At Port of Loading','Sailed','Underway','At Transshipment','Arrived at Discharge Port','Customs Clearance','Delivered','Delayed'].map(x=>[x,x]);return []}
+function openModal(type){currentType=type;let s=schemas[type];$('modalTitle').textContent=s.title;$('formFields').innerHTML=s.fields.map(([id,label,kind,req])=>{let input='';if(['material','po','currency','status','shipmentstatus'].includes(kind)){let opts=options(kind);input=`<select name="${id}" ${req?'required':''}><option value="">Select…</option>${opts.map(o=>`<option value="${esc(o[0])}">${esc(o[1])}</option>`).join('')}</select>`}else input=`<input name="${id}" type="${kind}" ${req?'required':''} ${kind==='number'?'min="0" step="any"':''}>`;return `<div class="field ${id==='remarks'?'full':''}"><label>${label}${req?' *':''}</label>${input}</div>`}).join('');$('modal').classList.add('show')}
+function closeModal(){$('modal').classList.remove('show')}
+$('recordForm').onsubmit=async e=>{e.preventDefault();let obj=Object.fromEntries(new FormData(e.target).entries());if(currentType==='material'&&state.materials.some(x=>x.code===obj.code)){alert('Material code already exists');return}if(currentType==='order'&&state.orders.some(x=>x.po===obj.po)){alert('PO number already exists');return}if(currentType==='receipt'&&state.receipts.some(x=>x.grn===obj.grn)){alert('GRN number already exists');return}
+if(currentType==='shipment'&&obj.imo&&!/^\d{7}$/.test(obj.imo)){if(!confirm('IMO numbers normally contain 7 digits. Save this value anyway?'))return}
+if(['quantity','amount','reorder','qty','rejected'].some(k=>k in obj))Object.keys(obj).forEach(k=>{if(['quantity','amount','reorder','qty','rejected'].includes(k))obj[k]=num(obj[k])});
+state[({material:'materials',order:'orders',shipment:'shipments',receipt:'receipts'})[currentType]].push(obj);await save();closeModal();e.target.reset();renderAll();};
+function del(type,id,key){if(!confirm('Delete this record?'))return;state[type]=state[type].filter(x=>x[key]!==id);save().then(renderAll)}
+function exportCSV(type){let data=type==='inventory'?state.materials.map(m=>({code:m.code,name:m.name,unit:m.unit,stock:stockFor(m.code),reorder:m.reorder})):state[type];if(!data.length){alert('No data to export');return}let keys=[...new Set(data.flatMap(Object.keys))];let csv=[keys.join(','),...data.map(r=>keys.map(k=>'"'+String(r[k]??'').replace(/"/g,'""')+'"').join(','))].join('\r\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='SCM_'+type+'.csv';a.click();URL.revokeObjectURL(a.href)}
+$('clock').textContent=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+load();
+</script></body></html>
